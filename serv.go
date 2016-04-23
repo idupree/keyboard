@@ -3,13 +3,13 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
 	"os"
 	"log"
-	"time"
+	//"time"
 	"encoding/json"
 	"io/ioutil"
 	"github.com/galaktor/gostwriter"
@@ -36,14 +36,16 @@ type InMessage struct {
 	InputEvents []InputEvent
 }
 
+// TODO handle key repeat in a way that is reasonable wrt netsplits
 func processMessages(c chan InMessage) {
 	kb, err := gostwriter.New("foo"); guard(err);
 	defer kb.Destroy()
-	fmt.Println(kb)
 
 	for {
-		<-c
-		hilarioustest(kb)
+		input := <-c
+		for _, ie := range input.InputEvents {
+			hilarioustest(kb, ie)
+		}
 	}
 }
 
@@ -56,12 +58,16 @@ func main() {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		//TODO constant time, non-code-committed, pw
 		good := (r.Method == "POST" && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword")
+		if !good {
+			w.WriteHeader(403)
+			return
+		}
 		var input InMessage
 		body, err1 := ioutil.ReadAll(r.Body)
 		err2 := json.Unmarshal(body, &input)
 		good = good && err1 == nil && err2 == nil
 		if !good {
-			w.WriteHeader(403)
+			w.WriteHeader(400)
 			return
 		}
 		c <- input
@@ -76,12 +82,42 @@ func main() {
 	err = http.Serve(l, router); guard(err);
 }
 
+
+// CODE_RESERVED if none match
+func keycodeFromName(name string) key.Code {
+	switch name {
+		case "a": return key.CODE_A
+		default: return key.CODE_RESERVED
+	}
+}
+
 // uses the 't', 'e' and 's' keys to write 'test' to the
 // console ten times. then it uses the 'ctrl' and 'c' keys
 // to kill itself by emulating a 'CTRL+C' command
-func hilarioustest(kb *gostwriter.Keyboard) {
-	fmt.Println(kb)
-
+func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
+	if ie.Action == "keydown" || ie.Action == "keyup" {
+		code := keycodeFromName(ie.Key)
+		var k *gostwriter.K
+		var err error
+		if code != key.CODE_RESERVED {
+			k, err = kb.Get(code); guard(err);
+			log.Println("known key")
+			if ie.Action == "keydown" {
+				press(k)
+			} else {
+				release(k)
+			}
+		} else {
+			log.Println("unknown key")
+		}
+	} else {
+		log.Println("unknown action")
+	}
+	/*var f int
+	f, err := kb.Get(key.CODE_T)
+	q, f := kb.Get(key.CODE_T)
+	f = key.CODE_T
+	//keys  map[string]*gostwriter.K
 	t, err    := kb.Get(key.CODE_T);         guard(err);
 	e, err    := kb.Get(key.CODE_E);         guard(err);
 	s, err    := kb.Get(key.CODE_S);         guard(err);
@@ -102,7 +138,7 @@ func hilarioustest(kb *gostwriter.Keyboard) {
 	push(t)
 	press(shift)
 	push(n1)
-	release(shift)
+	release(shift)*/
 /*
 	cnt := 0
 	for {
@@ -140,6 +176,7 @@ func release(k *gostwriter.K) {
 	err := k.Release(); guard(err);
 }
 
+// TODO consider which errors to tolerate
 // contains boilerplate error check. if error is present,
 // prints it then exits the app
 func guard(e error) {
