@@ -3,6 +3,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net"
@@ -19,9 +20,6 @@ import (
 var (
 	router *mux.Router = mux.NewRouter()
 	//kb *gostwriter.Keyboard
-)
-const (
-	sockpath = "/tmp/keyz.sock" //todo home/
 )
 
 type InputEvent struct {
@@ -50,6 +48,11 @@ func processMessages(c chan InMessage) {
 }
 
 func main() {
+	flag.Parse()
+	sockpath := flag.Arg(0)
+	if sockpath == "" {
+		log.Fatal("must specify socket path on command line")
+	}
 
 	c := make(chan InMessage)
 	go processMessages(c)
