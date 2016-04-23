@@ -1,3 +1,8 @@
 sudo modprobe uinput
 # perms??
 sudo chmod g+rw /dev/uinput
+
+go run serv.go /path/with/good/permissions/to/keys.sock
+
+# Also, have a systemd job for your nginx that points to
+# the customized config.
