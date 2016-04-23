@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"log"
+	"strings"
 	//"time"
 	"encoding/json"
 	"io/ioutil"
@@ -111,8 +112,48 @@ func main() {
 
 // CODE_RESERVED if none match
 func keycodeFromName(name string) key.Code {
-	switch name {
+	switch strings.ToLower(name) {
 		case "a": return key.CODE_A
+		case "b": return key.CODE_B
+		case "c": return key.CODE_C
+		case "d": return key.CODE_D
+		case "e": return key.CODE_E
+		case "f": return key.CODE_F
+		case "g": return key.CODE_G
+		case "h": return key.CODE_H
+		case "i": return key.CODE_I
+		case "j": return key.CODE_J
+		case "k": return key.CODE_K
+		case "l": return key.CODE_L
+		case "m": return key.CODE_M
+		case "n": return key.CODE_N
+		case "o": return key.CODE_O
+		case "p": return key.CODE_P
+		case "q": return key.CODE_Q
+		case "r": return key.CODE_R
+		case "s": return key.CODE_S
+		case "t": return key.CODE_T
+		case "u": return key.CODE_U
+		case "v": return key.CODE_V
+		case "w": return key.CODE_W
+		case "x": return key.CODE_X
+		case "y": return key.CODE_Y
+		case "z": return key.CODE_Z
+		case "0": return key.CODE_0
+		case "1": return key.CODE_1
+		case "2": return key.CODE_2
+		case "3": return key.CODE_3
+		case "4": return key.CODE_4
+		case "5": return key.CODE_5
+		case "6": return key.CODE_6
+		case "7": return key.CODE_7
+		case "8": return key.CODE_8
+		case "9": return key.CODE_9
+		case " ", "space": return key.CODE_SPACE
+		case "-": return key.CODE_MINUS
+		case "=": return key.CODE_EQUAL
+		case "backspace": return key.CODE_BACKSPACE
+		case "tab", "\t": return key.CODE_TAB
 		default: return key.CODE_RESERVED
 	}
 }
