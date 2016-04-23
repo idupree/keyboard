@@ -56,21 +56,34 @@ func main() {
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// already in nginx config:
-		//w.Header.Add('X-Frame-Options', 'DENY')
-		//w.Header.Add('X-Robots-Tag', 'noarchive, noindex, nosnippet')
-		//w.Header.Add('Cache-Control', 'no-cache')
-		//w.Header.Add('P3P', 'CP="This is not a P3P policy"')
-		//w.Header.Add('X-UA-Compatible', 'IE=edge')
-		//TODO constant time, non-code-committed, pw
-		//todo check X-Token, Origin
-		//...never mind, I'll use nginx for that
-		good := (r.Method == "POST" && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword")
-		//good := (r.Method == "POST" && len(r.Header["Origin"]) == 1 && r.Header["Origin"][0] == "" && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword")
+		//w.Header.Add("X-Frame-Options", "DENY")
+		//w.Header.Add("X-Robots-Tag", "noarchive, noindex, nosnippet")
+		//w.Header.Add("Cache-Control", "no-cache")
+		//w.Header.Add("P3P", "CP=\"This is not a P3P policy\"")
+		//w.Header.Add("X-UA-Compatible", "IE=edge")
+
+		good := true
+		good = good && r.Method == "POST"
+
+		// Checking for HTTPS won't work here in that we are behind nginx
+		// and the nginx--golang connection is over unix socket, not TCP+TLS.
+
+		// Redundant with nginx config but that is okay:
+		good = good && len(r.Header["X-Not-Cross-Domain"]) == 1 && r.Header["X-Not-Cross-Domain"][0] == "yes"
+
+		// Checking Origin/Referer is already in nginx config,
+		// and requires knowing the domain/port.
+
+		// nginx is doing HTTP Basic Auth. Given that, this is silly,
+		// in addition to being a non-constant-time comparison,
+		// with the password committed to code.
+		//good = good && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword"
 		if !good {
 			w.WriteHeader(403)
 			fmt.Fprintf(w, "<h1>403</h1>")
 			return
 		}
+
 		var input InMessage
 		body, err1 := ioutil.ReadAll(r.Body)
 		err2 := json.Unmarshal(body, &input)
@@ -80,9 +93,9 @@ func main() {
 			fmt.Fprintf(w, "<h1>400</h1>")
 			return
 		}
+
 		c <- input
 		w.WriteHeader(204)
-		//fmt.Fprintf(w, "<h1>Hello World</h1>")
 	})
 
 	os.Remove(sockpath) // (does nothing if absent)
