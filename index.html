@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>human input device</title>
+<style>
+.kb {
+  width: 1280px;
+  height: 689px;
+  background-color: #fcd;
+  margin: auto;
+}
+.key {
+  display: inline-block;
+  min-width: 95px;
+  min-height: 55px;
+  margin: 5px;
+  color: #222;
+  background-color: #f9f9f9;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.key:active {
+  background-color: #ddd;
+}
+</style>
+<body>
+<script>
++function(){
+"use strict";
+var rows = [
+  ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
+  ['Esc', 'back', 'forward', 'reload', 'cut', 'copy', 'paste', 'undo', 'redo'],
+  ['?', '{', '}', '[', ']', '/', '\\', '|', '<', '>', ':', '"'],
+  ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+  ['Tab', '`', 'Home', 'End', 'PgUp', 'PgDn', 'Delete', 'Left', 'Down', 'Up', 'Right'],
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'Enter'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
+  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', 'Shift'],
+  ['Ctrl', 'Alt', 'space']
+  ];
+
+var cachebuster = function() {
+  return '' + Date.now() + Math.random();
+}
+
+//..hmm what if keyup gets there before keydown..
+var sendCommand = function(command) {
+  var req = new XMLHttpRequest();
+  req.onreadystatechange = function() {
+    if(req.readyState === 4) { // complete
+      if(req.status === 200 || req.status === 204) {
+        console.log("yay");
+        if(callback) { callback(); }
+      } else if(req.status >= 400 && req.status < 500) {
+        console.log("boo!");
+      }
+    }
+  };
+  req.open('POST', '/magic?'+cachebuster(), true);
+  req.setRequestHeader('X-Not-Cross-Domain', 'yes');
+  req.setRequestHeader('X-Token', localStorage["authtoken"]);
+  req.setRequestHeader('X-Command', command);
+  req.send(null);
+}
+
+var keyDown = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  sendCommand('keydown ' + e.target.dataAction);
+};
+var keyUp = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+};
+var $kb = document.createElement('div');
+$kb.className = 'kb';
+for(var r = 0; r < rows.length; r++) {
+  var row = rows[r];
+  var $row = document.createElement('div');
+  $row.className = 'row';
+  for(var c = 0; c < row.length; c++) {
+    var key = row[c];
+    var $key = document.createElement('a');
+    $key.className = 'key';
+    $key.href = '#';
+    $key.textContent = key;
+    $key.dataAction = key;
+    $key.addEventListener('mousedown', keyDown);
+    $key.addEventListener('mouseup', keyUp);
+    $row.appendChild($key);
+  }
+  $kb.appendChild($row);
+}
+document.body.appendChild($kb);
+
+}();
+</script>
