@@ -3,7 +3,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
@@ -49,17 +49,26 @@ func processMessages(c chan InMessage) {
 	}
 }
 
-//todo check X-Token, Origin
 func main() {
 
 	c := make(chan InMessage)
 	go processMessages(c)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// already in nginx config:
+		//w.Header.Add('X-Frame-Options', 'DENY')
+		//w.Header.Add('X-Robots-Tag', 'noarchive, noindex, nosnippet')
+		//w.Header.Add('Cache-Control', 'no-cache')
+		//w.Header.Add('P3P', 'CP="This is not a P3P policy"')
+		//w.Header.Add('X-UA-Compatible', 'IE=edge')
 		//TODO constant time, non-code-committed, pw
+		//todo check X-Token, Origin
+		//...never mind, I'll use nginx for that
 		good := (r.Method == "POST" && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword")
+		//good := (r.Method == "POST" && len(r.Header["Origin"]) == 1 && r.Header["Origin"][0] == "" && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword")
 		if !good {
 			w.WriteHeader(403)
+			fmt.Fprintf(w, "<h1>403</h1>")
 			return
 		}
 		var input InMessage
@@ -68,6 +77,7 @@ func main() {
 		good = good && err1 == nil && err2 == nil
 		if !good {
 			w.WriteHeader(400)
+			fmt.Fprintf(w, "<h1>400</h1>")
 			return
 		}
 		c <- input
