@@ -21,6 +21,7 @@
   vertical-align: middle;
   text-decoration: none;
   border-radius: 5px;
+  transition: background-color 0.001s;
 }
 .key:active {
   background-color: #ddd;
@@ -47,35 +48,79 @@ var cachebuster = function() {
   return '' + Date.now() + Math.random();
 }
 
-//..hmm what if keyup gets there before keydown..
-var sendCommand = function(command) {
+// TODO if queued things are too old, stop trying them
+// TODO server-side, unpress keys when connection issues
+var queue = [];
+var inflight_queue = null;
+
+var retrySendQueue = function() {
+  setTimeout(function() {
+    queue = [].concat(inflight_queue, queue);
+    inflight_queue = null;
+    trySendQueue();
+  }, 1250);
+};
+var trySendQueue = function() {
+  if(queue.length === 0) {
+    return;
+  }
+  if(inflight_queue) {
+    return;
+  }
   var req = new XMLHttpRequest();
   req.onreadystatechange = function() {
     if(req.readyState === 4) { // complete
       if(req.status === 200 || req.status === 204) {
         console.log("yay");
-        if(callback) { callback(); }
-      } else if(req.status >= 400 && req.status < 500) {
-        console.log("boo!");
+        inflight_queue = null;
+      } else {
+        console.log("boo!", req.status);
       }
     }
   };
+  req.error = function() {
+    retrySendQueue();
+  };
+  req.timeout = 6000;
+  req.ontimeout = function() {
+    retrySendQueue();
+  };
   req.open('POST', '/magic?'+cachebuster(), true);
   req.setRequestHeader('X-Not-Cross-Domain', 'yes');
-  req.setRequestHeader('X-Token', localStorage["authtoken"]);
-  req.setRequestHeader('X-Command', command);
-  req.send(null);
-}
+  //req.setRequestHeader('X-Token', localStorage["authtoken"]);
+  //req.setRequestHeader('X-Command', command);
+  req.setRequestHeader('Content-Type', 'application/json');
+  var body = {"InputEvents": queue};
+  inflight_queue = queue;
+  queue = [];
+  req.send(JSON.stringify(body));
+};
 
+//..hmm what if keyup gets there before keydown..
+
+// mouseup can be on the wrong element and doesn't work with touch
+// simpler: hackily use the transitionend event to detect CSS's
+// perfect :active logic!
 var keyDown = function(e) {
   e.preventDefault();
   e.stopPropagation();
-  sendCommand('keydown ' + e.target.dataAction);
+  //sendCommand('keydown ' + e.target.dataAction);
+  queue.push({"Action": "keydown", "Key": e.target.dataAction});
+  trySendQueue();
 };
 var keyUp = function(e) {
   e.preventDefault();
   e.stopPropagation();
-};
+  queue.push({"Action": "keyup", "Key": e.target.dataAction});
+  trySendQueue();
+}
+var transitionEvent = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var action = (e.target.matches(':active') ? 'keydown' : 'keyup');
+  queue.push({"Action": action, "Key": e.target.dataAction});
+  trySendQueue();
+}
 var $kb = document.createElement('div');
 $kb.className = 'kb';
 for(var r = 0; r < rows.length; r++) {
@@ -89,8 +134,10 @@ for(var r = 0; r < rows.length; r++) {
     $key.href = '#';
     $key.textContent = key;
     $key.dataAction = key;
-    $key.addEventListener('mousedown', keyDown);
-    $key.addEventListener('mouseup', keyUp);
+    //$key.addEventListener('mousedown', keyDown);
+    //$key.addEventListener('mouseup', keyUp);
+    //not implemented in Chrome, it seems: $key.addEventListener('transitionstart', transitionStart);
+    $key.addEventListener('transitionend', transitionEvent);
     $row.appendChild($key);
   }
   $kb.appendChild($row);
