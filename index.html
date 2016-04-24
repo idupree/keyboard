@@ -137,7 +137,7 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
     delete activatedKeys[keyName];
   }
   if(isDown !== wasDown) {
-    var action = (isDown ? 'keydown' : 'keyup');
+    var action = (isDown ? 'keydn' : 'keyup');
     queue.push({"Action": action, "Key": keyName});
     trySendQueue();
   //TODO hilight key

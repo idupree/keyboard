@@ -24,7 +24,7 @@ var (
 )
 
 type InputEvent struct {
-	Action string //keydown, keyup....
+	Action string //keydn, keyup....
 	Key string //A, PageUp, LeftMouse
 	X float64 // used for some Actions
 	Y float64
@@ -205,13 +205,13 @@ func keycodeFromName(name string) key.Code {
 // console ten times. then it uses the 'ctrl' and 'c' keys
 // to kill itself by emulating a 'CTRL+C' command
 func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
-	if ie.Action == "keydown" || ie.Action == "keyup" {
+	if ie.Action == "keydn" || ie.Action == "keyup" {
 		code := keycodeFromName(ie.Key)
 		var k *gostwriter.K
 		var err error
 		if code != key.CODE_RESERVED {
 			k, err = kb.Get(code); guard(err);
-			if ie.Action == "keydown" {
+			if ie.Action == "keydn" {
 				log.Println("known key down")
 				press(k)
 			} else {
