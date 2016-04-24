@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>human input device</title>
 <style>
 .kb {
@@ -26,6 +27,9 @@
 .key:active {
   background-color: #ddd;
 }
+html, body {
+  overflow: hidden;
+}
 </style>
 <body>
 <script>
@@ -43,6 +47,9 @@ var rows = [
   ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', 'Shift'],
   ['Ctrl', 'Alt', 'space']
   ];
+
+// keyname: true for keys that are currently pressed down
+var activatedKeys = {};
 
 var cachebuster = function() {
   return '' + Date.now() + Math.random();
@@ -101,28 +108,55 @@ var trySendQueue = function() {
 // mouseup can be on the wrong element and doesn't work with touch
 // simpler: hackily use the transitionend event to detect CSS's
 // perfect :active logic!
-var keyDown = function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  //sendCommand('keydown ' + e.target.dataAction);
-  queue.push({"Action": "keydown", "Key": e.target.dataAction});
-  trySendQueue();
+// ...not quite perfect. Not for multiple touches at once on ChromeOS.
+// Also preventDefault on long touches on ChromeOS is important here
+// (stop rightclick menu, which is both the goal and sad).
+var keyActiveChange = function(keyName, isDown) {
+  var wasDown = !!activatedKeys[keyName];
+  var isDown = !!isDown;
+  if(isDown) {
+    activatedKeys[keyName] = true;
+  } else {
+    delete activatedKeys[keyName];
+  }
+  if(isDown !== wasDown) {
+    var action = (isDown ? 'keydown' : 'keyup');
+    queue.push({"Action": action, "Key": keyName});
+    trySendQueue();
+  }
+  //TODO hilight key
 };
-var keyUp = function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  queue.push({"Action": "keyup", "Key": e.target.dataAction});
-  trySendQueue();
-}
 var transitionEvent = function(e) {
   e.preventDefault();
   e.stopPropagation();
-  var action = (e.target.matches(':active') ? 'keydown' : 'keyup');
-  queue.push({"Action": action, "Key": e.target.dataAction});
-  trySendQueue();
-}
+  var down = e.target.matches(':active');
+  var key = e.target.dataAction;
+  keyActiveChange(key, down);
+};
+//TODO events bind to body not a?
+var touchEvent = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var touches = e.changedTouches;
+  for(var i = 0; i < touches.length; i++) {
+    var touch = touches[i];
+    var key = touch.target.dataAction;
+    if(key) {
+    if(e.type === 'touchstart') {
+      keyActiveChange(key, true);
+    }
+    if(e.type === 'touchend' || e.type === 'touchcancel') {
+      keyActiveChange(key, false);
+    }
+    }
+  }
+};
 var $kb = document.createElement('div');
 $kb.className = 'kb';
+$kb.addEventListener('touchstart', touchEvent);
+$kb.addEventListener('touchend', touchEvent);
+$kb.addEventListener('touchcancel', touchEvent);
+$kb.addEventListener('touchmove', touchEvent);
 for(var r = 0; r < rows.length; r++) {
   var row = rows[r];
   var $row = document.createElement('div');
