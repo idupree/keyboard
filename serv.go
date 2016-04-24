@@ -152,11 +152,52 @@ func keycodeFromName(name string) key.Code {
 		case " ", "space": return key.CODE_SPACE
 		case "-": return key.CODE_MINUS
 		case "=": return key.CODE_EQUAL
+		case "[": return key.CODE_LEFTBRACE
+		case "]": return key.CODE_RIGHTBRACE
+		case "(": return key.CODE_KPLEFTPAREN
+		case ")": return key.CODE_KPRIGHTPAREN
+		case ";": return key.CODE_SEMICOLON
+		case "'": return key.CODE_APOSTROPHE
+		case "`": return key.CODE_GRAVE
+		case "\\": return key.CODE_BACKSLASH
+		case ",": return key.CODE_COMMA
+		case ".": return key.CODE_DOT
+		case "/": return key.CODE_SLASH
+		case "*": return key.CODE_KPASTERISK //hmm
+		case "+": return key.CODE_KPPLUS //hmm
+		/*case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_
+		case "": return key.CODE_*/
 		// TODO - fwd del, rightshift
 		case "backspace", "delete": return key.CODE_BACKSPACE
 		case "shift": return key.CODE_LEFTSHIFT
 		case "tab", "\t": return key.CODE_TAB
+		case "up": return key.CODE_UP
+		case "left": return key.CODE_LEFT
+		case "right": return key.CODE_RIGHT
+		case "down": return key.CODE_DOWN
+		case "esc", "escape": return key.CODE_ESC
+		case "enter": return key.CODE_DOWN
+		case "linefeed": return key.CODE_LINEFEED //like shift+enter?
+		case "sysrq": return key.CODE_SYSRQ //nice if works?
+		case "home": return key.CODE_HOME
+		case "end": return key.CODE_END
+		case "pgup", "pageup": return key.CODE_PAGEUP
+		case "pgdown", "pagedown": return key.CODE_PAGEDOWN
+
+	//	case "": return key.CODE_
+	//	case "": return key.CODE_
 		default: return key.CODE_RESERVED
+		// TODO- ATK; shifted ones, and undoing shift for nonshifted ones if relevant
 	}
 }
 
