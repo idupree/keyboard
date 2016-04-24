@@ -55,10 +55,22 @@ var cachebuster = function() {
   return '' + Date.now() + Math.random();
 }
 
+var $statusarea = document.createElement('div');
+$statusarea.className = 'statusarea';
+
 // TODO if queued things are too old, stop trying them
 // TODO server-side, unpress keys when connection issues
+// TODO: per queue-item padding to equal size, and random dummy packets?
 var queue = [];
 var inflight_queue = null;
+
+var logStr = 'begin';
+$statusarea.textContent = logStr;
+var doLog = function(s) {
+  logStr += '; ' + s;
+  logStr = logStr.slice(-100);
+  $statusarea.textContent = logStr;
+};
 
 var retrySendQueue = function() {
   setTimeout(function() {
@@ -80,16 +92,21 @@ var trySendQueue = function() {
       if(req.status === 200 || req.status === 204) {
         console.log("yay");
         inflight_queue = null;
+        doLog('done.');
+        trySendQueue();
       } else {
         console.log("boo!", req.status);
+        doLog('failed.');
       }
     }
   };
   req.error = function() {
+    doLog('err-retry.');
     retrySendQueue();
   };
   req.timeout = 6000;
   req.ontimeout = function() {
+    doLog('timeout-retry.');
     retrySendQueue();
   };
   req.open('POST', '/magic?'+cachebuster(), true);
@@ -111,7 +128,7 @@ var trySendQueue = function() {
 // ...not quite perfect. Not for multiple touches at once on ChromeOS.
 // Also preventDefault on long touches on ChromeOS is important here
 // (stop rightclick menu, which is both the goal and sad).
-var keyActiveChange = function(keyName, isDown) {
+var keyActiveChange = function(keyElem, keyName, isDown) {
   var wasDown = !!activatedKeys[keyName];
   var isDown = !!isDown;
   if(isDown) {
@@ -123,15 +140,20 @@ var keyActiveChange = function(keyName, isDown) {
     var action = (isDown ? 'keydown' : 'keyup');
     queue.push({"Action": action, "Key": keyName});
     trySendQueue();
-  }
   //TODO hilight key
+    keyElem.style.color = (isDown ? '#f00' : '#0f0');
+
+    //$statusarea.textContent = keyName + " " + (isDown ? "down" : "up");
+    doLog(keyName + " " + (isDown ? "down" : "up"));
+  }
 };
 var transitionEvent = function(e) {
   e.preventDefault();
   e.stopPropagation();
-  var down = e.target.matches(':active');
-  var key = e.target.dataAction;
-  keyActiveChange(key, down);
+  var keyElem = e.target;
+  var down = keyElem.matches(':active');
+  var key = keyElem.dataAction;
+  keyActiveChange(keyElem, key, down);
 };
 //TODO events bind to body not a?
 var touchEvent = function(e) {
@@ -140,13 +162,14 @@ var touchEvent = function(e) {
   var touches = e.changedTouches;
   for(var i = 0; i < touches.length; i++) {
     var touch = touches[i];
-    var key = touch.target.dataAction;
+    var keyElem = touch.target;
+    var key = keyElem.dataAction;
     if(key) {
     if(e.type === 'touchstart') {
-      keyActiveChange(key, true);
+      keyActiveChange(keyElem, key, true);
     }
     if(e.type === 'touchend' || e.type === 'touchcancel') {
-      keyActiveChange(key, false);
+      keyActiveChange(keyElem, key, false);
     }
     }
   }
@@ -177,6 +200,8 @@ for(var r = 0; r < rows.length; r++) {
   $kb.appendChild($row);
 }
 document.body.appendChild($kb);
+
+$kb.appendChild($statusarea);
 
 }();
 </script>
