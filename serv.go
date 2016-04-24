@@ -168,10 +168,11 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 		var err error
 		if code != key.CODE_RESERVED {
 			k, err = kb.Get(code); guard(err);
-			log.Println("known key")
 			if ie.Action == "keydown" {
+				log.Println("known key down")
 				press(k)
 			} else {
+				log.Println("known key up")
 				release(k)
 			}
 		} else {
