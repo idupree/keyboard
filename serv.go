@@ -152,7 +152,9 @@ func keycodeFromName(name string) key.Code {
 		case " ", "space": return key.CODE_SPACE
 		case "-": return key.CODE_MINUS
 		case "=": return key.CODE_EQUAL
-		case "backspace": return key.CODE_BACKSPACE
+		// TODO - fwd del, rightshift
+		case "backspace", "delete": return key.CODE_BACKSPACE
+		case "shift": return key.CODE_LEFTSHIFT
 		case "tab", "\t": return key.CODE_TAB
 		default: return key.CODE_RESERVED
 	}
