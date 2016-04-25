@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>human input device</title>
 <style>
+/* CSS reset */
+article,aside,figure,footer,header,hgroup,menu,nav,section{display:block;}
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0;border:0}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:inherit;}
+img{color:transparent;font-size:0;border:0;vertical-align:middle;}
+abbr[title]{border-bottom:dotted 1px;}
+button{font:inherit;line-height:inherit;text-align:inherit;text-decoration:none;text-indent:0}
+
 .kb {
   width: 1280px;
   height: 689px;
@@ -22,6 +30,7 @@
   vertical-align: middle;
   text-decoration: none;
   border-radius: 5px;
+  cursor: pointer;
   transition: background-color 0.001s;
 }
 .key:active {
@@ -186,9 +195,8 @@ for(var r = 0; r < rows.length; r++) {
   $row.className = 'row';
   for(var c = 0; c < row.length; c++) {
     var key = row[c];
-    var $key = document.createElement('a');
+    var $key = document.createElement('button');
     $key.className = 'key';
-    $key.href = '#';
     $key.textContent = key;
     $key.dataAction = key;
     //$key.addEventListener('mousedown', keyDown);
