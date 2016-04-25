@@ -200,16 +200,43 @@ func keycodeFromName(name string) key.Code {
 		// TODO- ATK; shifted ones, and undoing shift for nonshifted ones if relevant
 	}
 }
+func shiftedKeycodeFromName(name string) key.Code {
+	switch strings.ToLower(name) {
+		case "~": return key.CODE_GRAVE
+		case "!": return key.CODE_1
+		case "@": return key.CODE_2
+		case "#": return key.CODE_3
+		case "$": return key.CODE_4
+		case "%": return key.CODE_5
+		case "^": return key.CODE_6
+		case "&": return key.CODE_7
+		case "_": return key.CODE_MINUS
+		case ":": return key.CODE_SEMICOLON
+		case "\"": return key.CODE_APOSTROPHE
+		case "<": return key.CODE_COMMA
+		case ">": return key.CODE_DOT
+		case "?": return key.CODE_SLASH
+		case "{": return key.CODE_LEFTBRACE
+		case "}": return key.CODE_RIGHTBRACE
+		case "|": return key.CODE_BACKSLASH
+		// these also can be made without shift
+		//case "+": return key.CODE_
+		//case "*": return key.CODE_
+		//case "(": return key.CODE_
+		//case ")": return key.CODE_
+		//case "": return key.CODE_
+		default: return key.CODE_RESERVED
+	}
+}
 
 // uses the 't', 'e' and 's' keys to write 'test' to the
 // console ten times. then it uses the 'ctrl' and 'c' keys
 // to kill itself by emulating a 'CTRL+C' command
 func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 	if ie.Action == "keydn" || ie.Action == "keyup" {
-		code := keycodeFromName(ie.Key)
 		var k *gostwriter.K
 		var err error
-		if code != key.CODE_RESERVED {
+		if code := keycodeFromName(ie.Key); code != key.CODE_RESERVED {
 			k, err = kb.Get(code); guard(err);
 			if ie.Action == "keydn" {
 				log.Println("known key down")
@@ -217,6 +244,20 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 			} else {
 				log.Println("known key up")
 				release(k)
+			}
+		} else if code := shiftedKeycodeFromName(ie.Key); code != key.CODE_RESERVED {
+			// TODO: something different if shift is already held down
+			k, err = kb.Get(code); guard(err);
+			var shift *gostwriter.K
+			shift, err = kb.Get(key.CODE_RIGHTSHIFT); guard(err);
+			if ie.Action == "keydn" {
+				log.Println("shifted key down")
+				press(shift)
+				press(k)
+			} else {
+				log.Println("shifted key up")
+				release(k)
+				release(shift)
 			}
 		} else {
 			log.Println("unknown key")
