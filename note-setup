@@ -6,3 +6,10 @@ go run serv.go /path/with/good/permissions/to/keys.sock
 
 # Also, have a systemd job for your nginx that points to
 # the customized config.
+
+
+
+to re-get favicon in case you want to change it:
+public domain image from http://publicdomainvectors.org/photos/input-keyboard.png
+convert -resize '32x32!' input-keyboard.png favicon.png
+convert to base64 data uri with e.g. https://www.adminbooster.com/tool/data_uri
