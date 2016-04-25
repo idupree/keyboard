@@ -34,7 +34,7 @@ button{font:inherit;line-height:inherit;text-align:inherit;text-decoration:none;
   transition: opacity 0.001s; /* for JS :active-change event */
 }
 .key:active {
-  background-color: #ddd;
+  background-color: #aaa;
   opacity: 0.9999999; /* for JS :active-change event */
 }
 html, body {
@@ -160,7 +160,7 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
     queue.push({"Action": action, "Key": keyName});
     trySendQueue();
     keyElem.style.color = (isDown ? '#f00' : '#0f0');
-    keyElem.style.backgroundColor = (isDown ? '#ddd' : null);
+    keyElem.style.backgroundColor = (isDown ? '#aaa' : null);
     doLog(keyName + " " + (isDown ? "down" : "up"));
   }
 };
