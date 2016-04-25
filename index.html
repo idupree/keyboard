@@ -31,10 +31,11 @@ button{font:inherit;line-height:inherit;text-align:inherit;text-decoration:none;
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.001s;
+  transition: opacity 0.001s; /* for JS :active-change event */
 }
 .key:active {
   background-color: #ddd;
+  opacity: 0.9999999; /* for JS :active-change event */
 }
 html, body {
   overflow: hidden;
@@ -158,10 +159,8 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
     var action = (isDown ? 'keydn' : 'keyup');
     queue.push({"Action": action, "Key": keyName});
     trySendQueue();
-  //TODO hilight key
     keyElem.style.color = (isDown ? '#f00' : '#0f0');
-
-    //$statusarea.textContent = keyName + " " + (isDown ? "down" : "up");
+    keyElem.style.backgroundColor = (isDown ? '#ddd' : null);
     doLog(keyName + " " + (isDown ? "down" : "up"));
   }
 };
