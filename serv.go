@@ -186,7 +186,7 @@ func keycodeFromName(name string) key.Code {
 		case "right": return key.CODE_RIGHT
 		case "down": return key.CODE_DOWN
 		case "esc", "escape": return key.CODE_ESC
-		case "enter": return key.CODE_DOWN
+		case "enter": return key.CODE_ENTER
 		case "linefeed": return key.CODE_LINEFEED //like shift+enter?
 		case "sysrq": return key.CODE_SYSRQ //nice if works?
 		case "home": return key.CODE_HOME
