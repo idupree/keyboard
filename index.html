@@ -161,7 +161,7 @@ var transitionEvent = function(e) {
   e.stopPropagation();
   var keyElem = e.target;
   var down = keyElem.matches(':active');
-  var key = keyElem.dataAction;
+  var key = keyElem.dataset.action;
   keyActiveChange(keyElem, key, down);
 };
 //TODO events bind to body not a?
@@ -172,7 +172,7 @@ var touchEvent = function(e) {
   for(var i = 0; i < touches.length; i++) {
     var touch = touches[i];
     var keyElem = touch.target;
-    var key = keyElem.dataAction;
+    var key = keyElem.dataset.action;
     if(key) {
     if(e.type === 'touchstart') {
       keyActiveChange(keyElem, key, true);
@@ -198,7 +198,7 @@ for(var r = 0; r < rows.length; r++) {
     var $key = document.createElement('button');
     $key.className = 'key';
     $key.textContent = key;
-    $key.dataAction = key;
+    $key.dataset.action = key;
     //$key.addEventListener('mousedown', keyDown);
     //$key.addEventListener('mouseup', keyUp);
     //not implemented in Chrome, it seems: $key.addEventListener('transitionstart', transitionStart);
