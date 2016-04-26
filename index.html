@@ -42,13 +42,24 @@ html, body {
   overflow: hidden;
 }
 .key[data-action="space"] {
-  width: 650px;
+  width: 745px;
 }
 .key[data-action="q"] {
   width: 105px;
 }
 .key[data-action="a"] {
   width: 145px;
+}
+.key[data-action="Left"], .key[data-action="Down"], .key[data-action="Right"], .key[data-action="Up"] {
+  width: 75px;
+  min-width: initial;
+}
+.key[data-action="1"], .key[data-action="2"], .key[data-action="3"], .key[data-action="4"],
+.key[data-action="5"], .key[data-action="6"], .key[data-action="7"], .key[data-action="8"],
+.key[data-action="9"], .key[data-action="0"]
+{
+  width: 75px;
+  min-width: initial;
 }
 </style>
 <body>
@@ -60,12 +71,12 @@ var rows = [
   ['Esc', 'back', 'forward', 'reload', 'cut', 'copy', 'paste', 'undo', 'redo'],
   ['?', '{', '}', '[', ']', '/', '\\', '|', '<', '>', ':', '"'],
   ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
-  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
-  ['Tab', '`', 'Home', 'End', 'PgUp', 'PgDn', 'Delete', 'Left', 'Down', 'Up', 'Right'],
+  ['`', '=', 'Home', 'End', 'PgUp', 'PgDn', 'Delete'],
+  ['Tab', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'Delete'],
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'Enter'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
-  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', 'Shift'],
-  ['Ctrl', 'Alt', 'space']
+  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', 'Up', 'Shift'],
+  ['Ctrl', 'Alt', 'space', 'Left', 'Down', 'Right']
   ];
 
 // keyname: true for keys that are currently pressed down
