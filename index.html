@@ -106,13 +106,15 @@ var trySendQueue = function() {
   if(inflight_queue) {
     return;
   }
+  var startTime = Date.now();
   var req = new XMLHttpRequest();
   req.onreadystatechange = function() {
     if(req.readyState === 4) { // complete
       if(req.status === 200 || req.status === 204) {
         console.log("yay");
         inflight_queue = null;
-        doLog('done.');
+        var endTime = Date.now();
+        doLog('done ' + (endTime - startTime) + 'ms.');
         trySendQueue();
       } else {
         console.log("boo!", req.status);
