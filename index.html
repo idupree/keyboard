@@ -25,6 +25,7 @@ button{font:inherit;line-height:inherit;text-align:inherit;text-decoration:none;
   min-width: 95px;
   min-height: 55px;
   margin: 5px;
+  font-size: 24px;
   color: #222;
   background-color: #f9f9f9;
   text-align: center;
@@ -173,7 +174,7 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
     var action = (isDown ? 'keydn' : 'keyup');
     queue.push({"Action": action, "Key": keyName});
     trySendQueue();
-    keyElem.style.color = (isDown ? '#f00' : '#0f0');
+    // keyElem.style.color = (isDown ? null : null);
     keyElem.style.backgroundColor = (isDown ? '#aaa' : null);
     doLog(keyName + " " + (isDown ? "down" : "up"));
   }
