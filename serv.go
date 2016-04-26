@@ -179,7 +179,9 @@ func keycodeFromName(name string) key.Code {
 		case "": return key.CODE_*/
 		// TODO - fwd del, rightshift
 		case "backspace", "delete": return key.CODE_BACKSPACE
+		case "ctrl", "control": return key.CODE_LEFTCTRL
 		case "shift": return key.CODE_LEFTSHIFT
+		case "alt", "option": return key.CODE_LEFTALT
 		case "tab", "\t": return key.CODE_TAB
 		case "up": return key.CODE_UP
 		case "left": return key.CODE_LEFT
