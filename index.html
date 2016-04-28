@@ -108,6 +108,16 @@ var doLog = function(s) {
   $statusarea.textContent = logStr;
 };
 
+// For sending data over the wire and making it a bit harder for
+// eavesdroppers to guess what you sent, make the messages only
+// have a few possible size categories they can be.
+var jsonStringifyWithPadding = function(obj, padCoarseness) {
+  var out = JSON.stringify(obj);
+  var padding = ((padCoarseness - 1) - (out.length % padCoarseness));
+  return out + ' '.repeat(padding);
+};
+
+
 var retrySendQueue = function() {
   setTimeout(function() {
     queue = [].concat(inflight_queue, queue);
@@ -155,7 +165,7 @@ var trySendQueue = function() {
   var body = {"InputEvents": queue};
   inflight_queue = queue;
   queue = [];
-  req.send(JSON.stringify(body));
+  req.send(jsonStringifyWithPadding(body, 120));
 };
 
 //..hmm what if keyup gets there before keydown..
@@ -176,7 +186,9 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
   }
   if(isDown !== wasDown) {
     var action = (isDown ? 'keydn' : 'keyup');
-    queue.push({"Action": action, "Key": keyName});
+    var inputEvent = {"Action": action, "Key": keyName};
+    //padJSONObjToMultiple(inputEvent, 40);
+    queue.push(inputEvent);
     trySendQueue();
     // keyElem.style.color = (isDown ? null : null);
     keyElem.style.backgroundColor = (isDown ? '#aaa' : null);
