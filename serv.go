@@ -199,6 +199,9 @@ func keycodeFromName(name string) key.Code {
 		// rarer keys
 		// doesn't seem to work--let's try shift-insert instead:
 		// case "paste": return key.CODE_PASTE
+		case "click": return key.CODE_BTN_LEFT
+		case "r.click": return key.CODE_BTN_RIGHT
+		case "m.click": return key.CODE_BTN_MIDDLE
 
 	//	case "": return key.CODE_
 	//	case "": return key.CODE_
