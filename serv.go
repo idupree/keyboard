@@ -195,6 +195,9 @@ func keycodeFromName(name string) key.Code {
 		case "end": return key.CODE_END
 		case "pgup", "pageup": return key.CODE_PAGEUP
 		case "pgdn", "pagedown": return key.CODE_PAGEDOWN
+		// rarer keys
+		// doesn't seem to work--let's try shift-insert instead:
+		// case "paste": return key.CODE_PASTE
 
 	//	case "": return key.CODE_
 	//	case "": return key.CODE_
@@ -227,6 +230,8 @@ func shiftedKeycodeFromName(name string) key.Code {
 		//case "(": return key.CODE_
 		//case ")": return key.CODE_
 		//case "": return key.CODE_
+		case "paste": return key.CODE_INSERT
+		case "cut": return key.CODE_DELETE
 		default: return key.CODE_RESERVED
 	}
 }
@@ -260,6 +265,21 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 				log.Println("shifted key up")
 				release(k)
 				release(shift)
+			}
+		} else if strings.ToLower(ie.Key) == "copy" {
+			code := key.CODE_INSERT
+			// code duplication with shifted cases above
+			k, err = kb.Get(code); guard(err);
+			var ctrl *gostwriter.K
+			ctrl, err = kb.Get(key.CODE_RIGHTCTRL); guard(err);
+			if ie.Action == "keydn" {
+				log.Println("shifted key down")
+				press(ctrl)
+				press(k)
+			} else {
+				log.Println("shifted key up")
+				release(k)
+				release(ctrl)
 			}
 		} else {
 			log.Println("unknown key")
