@@ -194,7 +194,7 @@ func keycodeFromName(name string) key.Code {
 		case "home": return key.CODE_HOME
 		case "end": return key.CODE_END
 		case "pgup", "pageup": return key.CODE_PAGEUP
-		case "pgdown", "pagedown": return key.CODE_PAGEDOWN
+		case "pgdn", "pagedown": return key.CODE_PAGEDOWN
 
 	//	case "": return key.CODE_
 	//	case "": return key.CODE_
