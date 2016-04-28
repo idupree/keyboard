@@ -196,9 +196,28 @@ func keycodeFromName(name string) key.Code {
 		case "end": return key.CODE_END
 		case "pgup", "pageup": return key.CODE_PAGEUP
 		case "pgdn", "pagedown": return key.CODE_PAGEDOWN
+		case "f1": return key.CODE_F1
+		case "f2": return key.CODE_F2
+		case "f3": return key.CODE_F3
+		case "f4": return key.CODE_F4
+		case "f5": return key.CODE_F5
+		case "f6": return key.CODE_F6
+		case "f7": return key.CODE_F7
+		case "f8": return key.CODE_F8
+		case "f9": return key.CODE_F9
+		case "f10": return key.CODE_F10
+		case "f11": return key.CODE_F11
+		case "f12": return key.CODE_F12
 		// rarer keys
 		// doesn't seem to work--let's try shift-insert instead:
 		// case "paste": return key.CODE_PASTE
+		// CODE_UNDO doesn't work. Ctrl-Z could. For redo, apps
+		// are evenly tied between Ctrl-Shift-Z and Ctrl-Y,
+		// so are we stuck?
+		// case "undo": return key.CODE_UNDO
+		case "back": return key.CODE_BACK
+		case "forward": return key.CODE_FORWARD
+		case "reload": return key.CODE_REFRESH
 		case "click": return key.CODE_BTN_LEFT
 		case "r.click": return key.CODE_BTN_RIGHT
 		case "m.click": return key.CODE_BTN_MIDDLE
