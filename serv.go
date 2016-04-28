@@ -49,6 +49,7 @@ func processMessages(c chan InMessage) {
 }
 
 func main() {
+	log.Print("hi")
 	flag.Parse()
 	sockpath := flag.Arg(0)
 	if sockpath == "" {
