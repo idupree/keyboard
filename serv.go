@@ -14,8 +14,8 @@ import (
 	//"time"
 	"encoding/json"
 	"io/ioutil"
-	"github.com/galaktor/gostwriter"
-	"github.com/galaktor/gostwriter/key"
+	"github.com/idupree/gostwriter-as-go-dep"
+	"github.com/idupree/gostwriter-as-go-dep/key"
 )
 
 var (
