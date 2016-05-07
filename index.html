@@ -24,11 +24,16 @@ html, body {
   height: 689px;
   background-color: #fcd;
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+  box-sizing: border-box;
 }
 .row {
-  height: 55px;
+  height: 7.982584%;
   width: 100%;
-  padding: 5px 0;
+  /*padding: 0.7256894049346879% 0;  padding height percents are of width*/
+  flex: 1 1 auto;
   overflow: hidden;
   white-space: nowrap; /* so overflows by a pixel don't wrap */
 }
@@ -74,6 +79,14 @@ html, body {
 .key[data-action=","], .key[data-action="."], .key[data-action="."] + .key[data-action="/"]
 {
   min-width: 5.7032%;
+}
+.statusarea {
+  /*
+  old actual: 20px + 18px unused space below aka 38px
+  new equivalent: height: 28px;
+  or flex ratio
+  */
+  flex: 0.733 0.733 auto;
 }
 </style>
 <body>
