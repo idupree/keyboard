@@ -38,12 +38,26 @@ html, body {
   overflow: hidden;
   white-space: nowrap; /* so overflows by a pixel don't wrap */
 }
+@media (min-height: 0) {
+.key {
+  font-size: 6.5vh;
+}
+}
+@media (min-height: 500px) {
+.key {
+  font-size: 5vh;
+}
+}
+@media (min-height: 800px) {
+.key {
+  font-size: 24px;
+}
+}
 .key {
   display: inline-block;
   min-width: 7.421875%;
   margin: 0 0.391%;
   height: 100%;
-  font-size: 24px;
   color: #222;
   background-color: #f9f9f9;
   text-align: center;
