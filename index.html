@@ -120,6 +120,36 @@ var doLog = function(s) {
 // For sending data over the wire and making it a bit harder for
 // eavesdroppers to guess what you sent, make the messages only
 // have a few possible size categories they can be.
+//
+// This does not protect from timing attacks.
+// For extracting small timing differences from this code,
+// I imagine I can't stop Chrome's touch processing having
+// small timing differences too. As an unreliable mitigation,
+// an attacker won't know what exact instant you pressed a key,
+// and their sample size of your typing is bounded by the amount
+// you actually type.
+//
+// For larger timing differences -- say, 1-100ms -- it is
+// very likely the user will have patterns of different
+// delay between different letters.  These will help
+// reveal what they type.  How can we mitigate this,
+// and at what cost?
+//
+// Consider
+//   https://security.stackexchange.com/questions/47192/how-does-ssh-defend-against-keystroke-timing-attacks
+// and the article "Timing analysis of keystrokes and timing attacks on SSH".
+//
+// The stackexchange page says this is not publicly known to have
+// been a problem in practice. However, there could be non-public
+// attacks, and we could be more at risk than SSH: SSH only sends
+// keydown, while we send both keydown and keyup, so we leak more info.
+//
+// The article's only suggestion that it feels good about is
+// to send a message every 50ms, whether or not there is a new
+// event to send.  (This could stop after a few seconds of
+// inactivity, with random length of "few", without leaking
+// too much.)  I'm unclear how reliably JS can do something
+// at that frequency, and how bad the latency tradeoff is.
 var jsonStringifyWithPadding = function(obj, padCoarseness) {
   var out = JSON.stringify(obj);
   var padding = ((padCoarseness - 1) - (out.length % padCoarseness));
