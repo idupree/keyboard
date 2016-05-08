@@ -6,16 +6,16 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net"
 	"net/http"
 	"os"
-	"log"
 	"strings"
 	//"time"
 	"encoding/json"
-	"io/ioutil"
 	"github.com/idupree/gostwriter-as-go-dep"
 	"github.com/idupree/gostwriter-as-go-dep/key"
+	"io/ioutil"
 )
 
 var (
@@ -24,11 +24,12 @@ var (
 )
 
 type InputEvent struct {
-	Action string //keydn, keyup....
-	Key string //A, PageUp, LeftMouse
-	X float64 // used for some Actions
-	Y float64
+	Action string  //keydn, keyup....
+	Key    string  //A, PageUp, LeftMouse
+	X      float64 // used for some Actions
+	Y      float64
 }
+
 // for now, send all queued, wait for rsvp, repeat
 // which has more latency than needed but is probably fine on lan
 type InMessage struct {
@@ -37,7 +38,8 @@ type InMessage struct {
 
 // TODO handle key repeat in a way that is reasonable wrt netsplits
 func processMessages(c chan InMessage) {
-	kb, err := gostwriter.New("foo"); guard(err);
+	kb, err := gostwriter.New("foo")
+	guard(err)
 	defer kb.Destroy()
 
 	for {
@@ -104,158 +106,268 @@ func main() {
 	})
 
 	os.Remove(sockpath) // (does nothing if absent)
-	l, err := net.Listen("unix", sockpath); guard(err);
-	err = os.Chmod(sockpath, 0770); guard(err);
+	l, err := net.Listen("unix", sockpath)
+	guard(err)
+	err = os.Chmod(sockpath, 0770)
+	guard(err)
 	defer l.Close()
-	err = http.Serve(l, router); guard(err);
+	err = http.Serve(l, router)
+	guard(err)
 }
-
 
 // CODE_RESERVED if none match
 func keycodeFromName(name string) key.Code {
 	switch strings.ToLower(name) {
-		case "a": return key.CODE_A
-		case "b": return key.CODE_B
-		case "c": return key.CODE_C
-		case "d": return key.CODE_D
-		case "e": return key.CODE_E
-		case "f": return key.CODE_F
-		case "g": return key.CODE_G
-		case "h": return key.CODE_H
-		case "i": return key.CODE_I
-		case "j": return key.CODE_J
-		case "k": return key.CODE_K
-		case "l": return key.CODE_L
-		case "m": return key.CODE_M
-		case "n": return key.CODE_N
-		case "o": return key.CODE_O
-		case "p": return key.CODE_P
-		case "q": return key.CODE_Q
-		case "r": return key.CODE_R
-		case "s": return key.CODE_S
-		case "t": return key.CODE_T
-		case "u": return key.CODE_U
-		case "v": return key.CODE_V
-		case "w": return key.CODE_W
-		case "x": return key.CODE_X
-		case "y": return key.CODE_Y
-		case "z": return key.CODE_Z
-		case "0": return key.CODE_0
-		case "1": return key.CODE_1
-		case "2": return key.CODE_2
-		case "3": return key.CODE_3
-		case "4": return key.CODE_4
-		case "5": return key.CODE_5
-		case "6": return key.CODE_6
-		case "7": return key.CODE_7
-		case "8": return key.CODE_8
-		case "9": return key.CODE_9
-		case " ", "space": return key.CODE_SPACE
-		case "-": return key.CODE_MINUS
-		case "=": return key.CODE_EQUAL
-		case "[": return key.CODE_LEFTBRACE
-		case "]": return key.CODE_RIGHTBRACE
-		case "(": return key.CODE_KPLEFTPAREN
-		case ")": return key.CODE_KPRIGHTPAREN
-		case ";": return key.CODE_SEMICOLON
-		case "'": return key.CODE_APOSTROPHE
-		case "`": return key.CODE_GRAVE
-		case "\\": return key.CODE_BACKSLASH
-		case ",": return key.CODE_COMMA
-		case ".": return key.CODE_DOT
-		case "/": return key.CODE_SLASH
-		case "*": return key.CODE_KPASTERISK //hmm
-		case "+": return key.CODE_KPPLUS //hmm
-		/*case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_
-		case "": return key.CODE_*/
-		// TODO - fwd del, rightshift
-		case "backspace", "delete": return key.CODE_BACKSPACE
-		case "ctrl", "control": return key.CODE_LEFTCTRL
-		case "shift": return key.CODE_LEFTSHIFT
-		case "alt", "option": return key.CODE_LEFTALT
-		case "tab", "\t": return key.CODE_TAB
-		case "up": return key.CODE_UP
-		case "left": return key.CODE_LEFT
-		case "right": return key.CODE_RIGHT
-		case "down": return key.CODE_DOWN
-		case "esc", "escape": return key.CODE_ESC
-		case "enter": return key.CODE_ENTER
-		case "linefeed": return key.CODE_LINEFEED //like shift+enter?
-		case "sysrq": return key.CODE_SYSRQ //nice if works?
-		case "home": return key.CODE_HOME
-		case "end": return key.CODE_END
-		case "pgup", "pageup": return key.CODE_PAGEUP
-		case "pgdn", "pagedown": return key.CODE_PAGEDOWN
-		case "f1": return key.CODE_F1
-		case "f2": return key.CODE_F2
-		case "f3": return key.CODE_F3
-		case "f4": return key.CODE_F4
-		case "f5": return key.CODE_F5
-		case "f6": return key.CODE_F6
-		case "f7": return key.CODE_F7
-		case "f8": return key.CODE_F8
-		case "f9": return key.CODE_F9
-		case "f10": return key.CODE_F10
-		case "f11": return key.CODE_F11
-		case "f12": return key.CODE_F12
-		// rarer keys
-		// doesn't seem to work--let's try shift-insert instead:
-		// case "paste": return key.CODE_PASTE
-		// CODE_UNDO doesn't work. Ctrl-Z could. For redo, apps
-		// are evenly tied between Ctrl-Shift-Z and Ctrl-Y,
-		// so are we stuck?
-		// case "undo": return key.CODE_UNDO
-		case "back": return key.CODE_BACK
-		case "forward": return key.CODE_FORWARD
-		case "reload": return key.CODE_REFRESH
-		case "click": return key.CODE_BTN_LEFT
-		case "r.click": return key.CODE_BTN_RIGHT
-		case "m.click": return key.CODE_BTN_MIDDLE
+	case "a":
+		return key.CODE_A
+	case "b":
+		return key.CODE_B
+	case "c":
+		return key.CODE_C
+	case "d":
+		return key.CODE_D
+	case "e":
+		return key.CODE_E
+	case "f":
+		return key.CODE_F
+	case "g":
+		return key.CODE_G
+	case "h":
+		return key.CODE_H
+	case "i":
+		return key.CODE_I
+	case "j":
+		return key.CODE_J
+	case "k":
+		return key.CODE_K
+	case "l":
+		return key.CODE_L
+	case "m":
+		return key.CODE_M
+	case "n":
+		return key.CODE_N
+	case "o":
+		return key.CODE_O
+	case "p":
+		return key.CODE_P
+	case "q":
+		return key.CODE_Q
+	case "r":
+		return key.CODE_R
+	case "s":
+		return key.CODE_S
+	case "t":
+		return key.CODE_T
+	case "u":
+		return key.CODE_U
+	case "v":
+		return key.CODE_V
+	case "w":
+		return key.CODE_W
+	case "x":
+		return key.CODE_X
+	case "y":
+		return key.CODE_Y
+	case "z":
+		return key.CODE_Z
+	case "0":
+		return key.CODE_0
+	case "1":
+		return key.CODE_1
+	case "2":
+		return key.CODE_2
+	case "3":
+		return key.CODE_3
+	case "4":
+		return key.CODE_4
+	case "5":
+		return key.CODE_5
+	case "6":
+		return key.CODE_6
+	case "7":
+		return key.CODE_7
+	case "8":
+		return key.CODE_8
+	case "9":
+		return key.CODE_9
+	case " ", "space":
+		return key.CODE_SPACE
+	case "-":
+		return key.CODE_MINUS
+	case "=":
+		return key.CODE_EQUAL
+	case "[":
+		return key.CODE_LEFTBRACE
+	case "]":
+		return key.CODE_RIGHTBRACE
+	case "(":
+		return key.CODE_KPLEFTPAREN
+	case ")":
+		return key.CODE_KPRIGHTPAREN
+	case ";":
+		return key.CODE_SEMICOLON
+	case "'":
+		return key.CODE_APOSTROPHE
+	case "`":
+		return key.CODE_GRAVE
+	case "\\":
+		return key.CODE_BACKSLASH
+	case ",":
+		return key.CODE_COMMA
+	case ".":
+		return key.CODE_DOT
+	case "/":
+		return key.CODE_SLASH
+	case "*":
+		return key.CODE_KPASTERISK //hmm
+	case "+":
+		return key.CODE_KPPLUS //hmm
+	/*case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_
+	case "": return key.CODE_*/
+	// TODO - fwd del, rightshift
+	case "backspace", "delete":
+		return key.CODE_BACKSPACE
+	case "ctrl", "control":
+		return key.CODE_LEFTCTRL
+	case "shift":
+		return key.CODE_LEFTSHIFT
+	case "alt", "option":
+		return key.CODE_LEFTALT
+	case "tab", "\t":
+		return key.CODE_TAB
+	case "up":
+		return key.CODE_UP
+	case "left":
+		return key.CODE_LEFT
+	case "right":
+		return key.CODE_RIGHT
+	case "down":
+		return key.CODE_DOWN
+	case "esc", "escape":
+		return key.CODE_ESC
+	case "enter":
+		return key.CODE_ENTER
+	case "linefeed":
+		return key.CODE_LINEFEED //like shift+enter?
+	case "sysrq":
+		return key.CODE_SYSRQ //nice if works?
+	case "home":
+		return key.CODE_HOME
+	case "end":
+		return key.CODE_END
+	case "pgup", "pageup":
+		return key.CODE_PAGEUP
+	case "pgdn", "pagedown":
+		return key.CODE_PAGEDOWN
+	case "f1":
+		return key.CODE_F1
+	case "f2":
+		return key.CODE_F2
+	case "f3":
+		return key.CODE_F3
+	case "f4":
+		return key.CODE_F4
+	case "f5":
+		return key.CODE_F5
+	case "f6":
+		return key.CODE_F6
+	case "f7":
+		return key.CODE_F7
+	case "f8":
+		return key.CODE_F8
+	case "f9":
+		return key.CODE_F9
+	case "f10":
+		return key.CODE_F10
+	case "f11":
+		return key.CODE_F11
+	case "f12":
+		return key.CODE_F12
+	// rarer keys
+	// doesn't seem to work--let's try shift-insert instead:
+	// case "paste": return key.CODE_PASTE
+	// CODE_UNDO doesn't work. Ctrl-Z could. For redo, apps
+	// are evenly tied between Ctrl-Shift-Z and Ctrl-Y,
+	// so are we stuck?
+	// case "undo": return key.CODE_UNDO
+	case "back":
+		return key.CODE_BACK
+	case "forward":
+		return key.CODE_FORWARD
+	case "reload":
+		return key.CODE_REFRESH
+	case "click":
+		return key.CODE_BTN_LEFT
+	case "r.click":
+		return key.CODE_BTN_RIGHT
+	case "m.click":
+		return key.CODE_BTN_MIDDLE
 
-	//	case "": return key.CODE_
-	//	case "": return key.CODE_
-		default: return key.CODE_RESERVED
+		//	case "": return key.CODE_
+		//	case "": return key.CODE_
+	default:
+		return key.CODE_RESERVED
 		// TODO- ATK; shifted ones, and undoing shift for nonshifted ones if relevant
 	}
 }
 func shiftedKeycodeFromName(name string) key.Code {
 	switch strings.ToLower(name) {
-		case "~": return key.CODE_GRAVE
-		case "!": return key.CODE_1
-		case "@": return key.CODE_2
-		case "#": return key.CODE_3
-		case "$": return key.CODE_4
-		case "%": return key.CODE_5
-		case "^": return key.CODE_6
-		case "&": return key.CODE_7
-		case "_": return key.CODE_MINUS
-		case ":": return key.CODE_SEMICOLON
-		case "\"": return key.CODE_APOSTROPHE
-		case "<": return key.CODE_COMMA
-		case ">": return key.CODE_DOT
-		case "?": return key.CODE_SLASH
-		case "{": return key.CODE_LEFTBRACE
-		case "}": return key.CODE_RIGHTBRACE
-		case "|": return key.CODE_BACKSLASH
-		// these also can be made without shift
-		//case "+": return key.CODE_
-		//case "*": return key.CODE_
-		//case "(": return key.CODE_
-		//case ")": return key.CODE_
-		//case "": return key.CODE_
-		case "paste": return key.CODE_INSERT
-		case "cut": return key.CODE_DELETE
-		default: return key.CODE_RESERVED
+	case "~":
+		return key.CODE_GRAVE
+	case "!":
+		return key.CODE_1
+	case "@":
+		return key.CODE_2
+	case "#":
+		return key.CODE_3
+	case "$":
+		return key.CODE_4
+	case "%":
+		return key.CODE_5
+	case "^":
+		return key.CODE_6
+	case "&":
+		return key.CODE_7
+	case "_":
+		return key.CODE_MINUS
+	case ":":
+		return key.CODE_SEMICOLON
+	case "\"":
+		return key.CODE_APOSTROPHE
+	case "<":
+		return key.CODE_COMMA
+	case ">":
+		return key.CODE_DOT
+	case "?":
+		return key.CODE_SLASH
+	case "{":
+		return key.CODE_LEFTBRACE
+	case "}":
+		return key.CODE_RIGHTBRACE
+	case "|":
+		return key.CODE_BACKSLASH
+	// these also can be made without shift
+	//case "+": return key.CODE_
+	//case "*": return key.CODE_
+	//case "(": return key.CODE_
+	//case ")": return key.CODE_
+	//case "": return key.CODE_
+	case "paste":
+		return key.CODE_INSERT
+	case "cut":
+		return key.CODE_DELETE
+	default:
+		return key.CODE_RESERVED
 	}
 }
 
@@ -267,7 +379,8 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 		var k *gostwriter.K
 		var err error
 		if code := keycodeFromName(ie.Key); code != key.CODE_RESERVED {
-			k, err = kb.Get(code); guard(err);
+			k, err = kb.Get(code)
+			guard(err)
 			if ie.Action == "keydn" {
 				log.Println("known key down")
 				press(k)
@@ -277,9 +390,11 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 			}
 		} else if code := shiftedKeycodeFromName(ie.Key); code != key.CODE_RESERVED {
 			// TODO: something different if shift is already held down
-			k, err = kb.Get(code); guard(err);
+			k, err = kb.Get(code)
+			guard(err)
 			var shift *gostwriter.K
-			shift, err = kb.Get(key.CODE_RIGHTSHIFT); guard(err);
+			shift, err = kb.Get(key.CODE_RIGHTSHIFT)
+			guard(err)
 			if ie.Action == "keydn" {
 				log.Println("shifted key down")
 				press(shift)
@@ -292,9 +407,11 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 		} else if strings.ToLower(ie.Key) == "copy" {
 			code := key.CODE_INSERT
 			// code duplication with shifted cases above
-			k, err = kb.Get(code); guard(err);
+			k, err = kb.Get(code)
+			guard(err)
 			var ctrl *gostwriter.K
-			ctrl, err = kb.Get(key.CODE_RIGHTCTRL); guard(err);
+			ctrl, err = kb.Get(key.CODE_RIGHTCTRL)
+			guard(err)
 			if ie.Action == "keydn" {
 				log.Println("shifted key down")
 				press(ctrl)
@@ -336,41 +453,44 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 	press(shift)
 	push(n1)
 	release(shift)*/
-/*
-	cnt := 0
-	for {
-		<-time.After(time.Millisecond*100)
-		push(t)
-		<-time.After(time.Millisecond*100)
-		push(e)
-		<-time.After(time.Millisecond*100)
-		push(s)
-		<-time.After(time.Millisecond*100)
-		push(t)
-		<-time.After(time.Millisecond*500)
-		push(ret)
-		
-		if cnt = cnt + 1; cnt == 10 {
-			press(ctrl)
-			press(c)
+	/*
+		cnt := 0
+		for {
+			<-time.After(time.Millisecond*100)
+			push(t)
+			<-time.After(time.Millisecond*100)
+			push(e)
+			<-time.After(time.Millisecond*100)
+			push(s)
+			<-time.After(time.Millisecond*100)
+			push(t)
+			<-time.After(time.Millisecond*500)
+			push(ret)
+
+			if cnt = cnt + 1; cnt == 10 {
+				press(ctrl)
+				press(c)
+			}
 		}
-	}
-*/
+	*/
 }
 
 // presses and subsequently releases a key
 func push(k *gostwriter.K) {
-	err := k.Push(); guard(err);
+	err := k.Push()
+	guard(err)
 }
 
 // presses a key, if not already pressed. does not release
 func press(k *gostwriter.K) {
-	err := k.Press(); guard(err);
+	err := k.Press()
+	guard(err)
 }
 
 // releases a key, if not aready released.
 func release(k *gostwriter.K) {
-	err := k.Release(); guard(err);
+	err := k.Release()
+	guard(err)
 }
 
 // TODO consider which errors to tolerate
