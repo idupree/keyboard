@@ -85,6 +85,7 @@ func main() {
 		// in addition to being a non-constant-time comparison,
 		// with the password committed to code.
 		//good = good && len(r.Header["X-Token"]) == 1 && r.Header["X-Token"][0] == "badpassword"
+
 		if !good {
 			w.WriteHeader(403)
 			fmt.Fprintf(w, "<h1>403</h1>")
