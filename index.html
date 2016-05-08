@@ -67,8 +67,10 @@ html, body {
   cursor: pointer;
   transition: opacity 0.001s; /* for JS :active-change event */
 }
-.key:active {
+.key:active, .key.activated {
   background-color: #aaa;
+}
+.key:active {
   opacity: 0.9999999; /* for JS :active-change event */
 }
 .key[data-action="space"] {
@@ -235,6 +237,12 @@ var trySendQueue = function() {
   req.send(jsonStringifyWithPadding(body, 120));
 };
 
+// IE11 doesn't support 2 argument classList.toggle
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+var toggleClass = function(elem, klass, be) {
+  elem.classList[be ? 'add' : 'remove'](klass);
+};
+
 //..hmm what if keyup gets there before keydown..
 
 // mouseup can be on the wrong element and doesn't work with touch
@@ -258,7 +266,8 @@ var keyActiveChange = function(keyElem, keyName, isDown) {
     queue.push(inputEvent);
     trySendQueue();
     // keyElem.style.color = (isDown ? null : null);
-    keyElem.style.backgroundColor = (isDown ? '#aaa' : null);
+    // keyElem.style.backgroundColor = (isDown ? '#aaa' : null);
+    toggleClass(keyElem, 'activated', isDown);
     doLog(keyName + " " + (isDown ? "down" : "up"));
   }
 };
