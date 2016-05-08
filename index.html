@@ -65,14 +65,21 @@ html, body {
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: opacity 0.001s; /* for JS :active-change event */
 }
 .key:active, .key.activated {
   background-color: #aaa;
 }
-.key:active {
-  opacity: 0.9999999; /* for JS :active-change event */
+/* for JS events detecting button activation/deactivation */
+.key:not(:active) {
+  animation-duration: 0s;
+  animation-name: keyup;
 }
+.key:active {
+  animation-duration: 0s;
+  animation-name: keydown;
+}
+@keyframes keyup { from { } to { } }
+@keyframes keydown { from { } to { } }
 .key[data-action="space"] {
   width: 61.25%;
 }
@@ -316,8 +323,7 @@ for(var r = 0; r < rows.length; r++) {
     $key.dataset.action = key;
     //$key.addEventListener('mousedown', keyDown);
     //$key.addEventListener('mouseup', keyUp);
-    //not implemented in Chrome, it seems: $key.addEventListener('transitionstart', transitionStart);
-    $key.addEventListener('transitionend', transitionEvent);
+    $key.addEventListener('animationstart', transitionEvent);
     $row.appendChild($key);
   }
   $kb.appendChild($row);
