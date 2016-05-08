@@ -67,7 +67,15 @@ html, body {
   cursor: pointer;
 }
 .key:active, .key.activated {
+  xbackground-color: #aaa;
+}
+.key.activated {
+  xcolor: #e66;
   background-color: #aaa;
+}
+.key:active {
+  /* firefox :active with touch events sometimes sticks */
+  xbackground-color: #aaa;
 }
 /* for JS events detecting button activation/deactivation */
 .key:not(:active) {
