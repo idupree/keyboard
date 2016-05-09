@@ -246,13 +246,13 @@ func keycodeFromName(name string) key.Code {
 		return key.CODE_LEFTALT
 	case "tab", "\t":
 		return key.CODE_TAB
-	case "up":
+	case "arrowup", "up":
 		return key.CODE_UP
-	case "left":
+	case "arrowleft", "left":
 		return key.CODE_LEFT
-	case "right":
+	case "arrowright", "right":
 		return key.CODE_RIGHT
-	case "down":
+	case "arrowdown", "down":
 		return key.CODE_DOWN
 	case "esc", "escape":
 		return key.CODE_ESC
