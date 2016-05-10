@@ -1,0 +1,115 @@
+/* CSS reset */
+article,aside,figure,footer,header,hgroup,menu,nav,section{display:block;}
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0;border:0}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:inherit;}
+img{color:transparent;font-size:0;border:0;vertical-align:middle;}
+abbr[title]{border-bottom:dotted 1px;}
+button{font:inherit;line-height:inherit;text-align:inherit;text-decoration:none;text-indent:0}
+
+html, body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: Verdana, Tahoma, Geneva, sans-serif;
+}
+.kb {
+  max-width: 1280px;
+  max-height: 689px;
+  height: 100%;
+  background-color: #fcd;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+  box-sizing: border-box;
+}
+.row {
+  height: 7.982584%;
+  width: 100%;
+  /*padding: 0.7256894049346879% 0;  padding height percents are of width*/
+  flex: 1 1 auto;
+  overflow: hidden;
+  white-space: nowrap; /* so overflows by a pixel don't wrap */
+}
+@media (min-height: 0) {
+.key {
+  font-size: 6vh;
+}
+}
+@media (min-height: 500px) {
+.key {
+  font-size: 4.5vh;
+}
+}
+@media (min-height: 800px) {
+.key {
+  font-size: 23px;
+}
+}
+.key {
+  display: inline-block;
+  min-width: 7.421875%;
+  margin: 0 0.391%;
+  height: 100%;
+  color: #222;
+  background-color: #f9f9f9;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.key:active, .key.activated {
+  xbackground-color: #aaa;
+}
+.key.activated {
+  xcolor: #e66;
+  background-color: #aaa;
+}
+.key:active {
+  /* firefox :active with touch events sometimes sticks */
+  xbackground-color: #aaa;
+}
+/* for JS events detecting button activation/deactivation */
+.key:not(:active) {
+  animation-duration: 0s;
+  animation-name: keyup;
+}
+.key:active {
+  animation-duration: 0s;
+  animation-name: keydown;
+}
+@keyframes keyup { from { } to { } }
+@keyframes keydown { from { } to { } }
+.key[data-action="space"] {
+  width: 61.25%;
+}
+.key[data-action="q"] {
+  width: 8.2%;
+}
+.key[data-action="a"] {
+  width: 11.33%;
+}
+.key[data-action="Left"], .key[data-action="Down"], .key[data-action="Right"], .key[data-action="Up"] {
+  width: 5.8594%;
+  min-width: initial;
+}
+.key[data-action="1"], .key[data-action="2"], .key[data-action="3"], .key[data-action="4"],
+.key[data-action="5"], .key[data-action="6"], .key[data-action="7"], .key[data-action="8"],
+.key[data-action="9"], .key[data-action="0"]
+{
+  width: 5.8594%;
+  min-width: initial;
+}
+.key[data-action=","], .key[data-action="."], .key[data-action="."] + .key[data-action="/"]
+{
+  min-width: 5.7032%;
+}
+.statusarea {
+  /*
+  old actual: 20px + 18px unused space below aka 38px
+  new equivalent: height: 28px;
+  or flex ratio
+  */
+  flex: 0.733 0.733 auto;
+}
