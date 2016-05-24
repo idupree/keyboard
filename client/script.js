@@ -14,7 +14,7 @@ var rows = [
   ];
 
 // keyname: true for keys that are currently pressed down
-var activatedKeys = {};
+var activatedKeys = Object.create(null);
 
 var cachebuster = function() {
   return '' + Date.now() + Math.random();
