@@ -183,6 +183,10 @@ var keyActiveChange = function(keyName, isDown, keyElem, e) {
       toggleClass(keyElem, 'activated', isDown);
     }
     doLog(keyName + " " + (isDown ? "down" : "up"));
+    if(isDown && keyElem) {
+      //boop(300 + (keyName.charCodeAt(0) % 256));
+      boop(350 + (keyElem.dataset.row % 3) * 40 + (keyElem.dataset.col % 3) * 70, 0.2);
+    }
   }
 };
 var transitionEvent = function(e) {
