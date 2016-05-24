@@ -186,6 +186,15 @@ var keyActiveChange = function(keyName, isDown, keyElem, e) {
     if(isDown && keyElem) {
       //boop(300 + (keyName.charCodeAt(0) % 256));
       boop(350 + (keyElem.dataset.row % 3) * 40 + (keyElem.dataset.col % 3) * 70, 0.2);
+      var rect = keyElem.getBoundingClientRect();
+      var left = e.clientX - rect.left - keyElem.clientLeft + keyElem.scrollLeft;
+      var top = e.clientY - rect.top - keyElem.clientTop + keyElem.scrollTop;
+      var lr = Math.abs(left / rect.width * 2 - 1);
+      //var goodness /*0-1*/ = 
+      //doLog(lr+'@');
+      if(lr > 0.5) {
+        boop(440, Math.pow(lr, 4) * 0.5);
+      }
     }
   }
 };
