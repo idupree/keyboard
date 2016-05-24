@@ -27,7 +27,7 @@ $statusarea.className = 'statusarea';
 // TODO server-side, unpress keys when connection issues
 // TODO: per queue-item padding to equal size, and random dummy packets?
 var queue = [];
-var inflight_queue = null;
+var inflight = {};
 
 var logStr = 'begin';
 $statusarea.textContent = logStr;
@@ -102,9 +102,15 @@ var jsonStringifyWithPadding = function(obj, padCoarseness) {
 
 
 var retrySendQueue = function() {
+  if(Date.now() - inflight.oldStartTime > 22000) {
+    doLog('giving up on sending this input at all');
+    inflight = {};
+    return;
+  }
   setTimeout(function() {
-    queue = [].concat(inflight_queue, queue);
-    inflight_queue = null;
+    queue = [].concat(inflight.queue, queue);
+    clearTimeout(inflight.timer);
+    inflight = { oldStartTime: inflight.oldStartTime };
     trySendQueue();
   }, 1250);
 };
@@ -112,18 +118,24 @@ var trySendQueue = function() {
   if(queue.length === 0) {
     return;
   }
-  if(inflight_queue) {
+  if(inflight.queue) {
     return;
   }
-  var startTime = Date.now();
+  inflight.startTime = Date.now();
+  if(!('oldStartTime' in inflight)) {
+    inflight.oldStartTime = inflight.startTime;
+  }
   var req = new XMLHttpRequest();
+  inflight.req = req;
   req.onreadystatechange = function() {
     if(req.readyState === 4) { // complete
       if(req.status === 200 || req.status === 204) {
         console.log("yay");
-        inflight_queue = null;
         var endTime = Date.now();
-        doLog('done ' + (endTime - startTime) + 'ms.');
+        doLog('done ' + (endTime - inflight.startTime) + 'ms.');
+        inflight.queue = null;
+        clearTimeout(inflight.timer);
+        inflight = {};
         trySendQueue();
       } else {
         console.log("boo!", req.status);
@@ -146,7 +158,15 @@ var trySendQueue = function() {
   //req.setRequestHeader('X-Command', command);
   req.setRequestHeader('Content-Type', 'application/json');
   var body = {"InputEvents": queue};
-  inflight_queue = queue;
+  inflight.timer = setTimeout(function() {
+    inflight.timer = setTimeout(function() {
+      doLog('timeout-retry!');
+      inflight.timer = null;
+      inflight.req.abort();
+      retrySendQueue();
+    }, 4000);
+    }, 1500);
+  inflight.queue = queue;
   queue = [];
   req.send(jsonStringifyWithPadding(body, 120));
 };
