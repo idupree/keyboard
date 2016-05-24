@@ -159,8 +159,11 @@ var trySendQueue = function() {
   req.setRequestHeader('Content-Type', 'application/json');
   var body = {"InputEvents": queue};
   inflight.timer = setTimeout(function() {
+    boop(380, 0.7); boop(760, 0.6);
     inflight.timer = setTimeout(function() {
       doLog('timeout-retry!');
+      boop(380, 0.7); boop(760, 0.6);
+      boop(420, 0.7); boop(800, 0.6);
       inflight.timer = null;
       inflight.req.abort();
       retrySendQueue();
