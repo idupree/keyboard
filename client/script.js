@@ -191,12 +191,24 @@ var touchEvent = function(e) {
     }
   }
 };
+var mouseEvent = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var keyElem = e.target;
+  var key = keyElem.dataset.action;
+  if(key) {
+    doLog(e.type);
+    keyActiveChange(key, e.type==='mousedown', keyElem, e);
+  }
+};
 var $kb = document.createElement('div');
 $kb.className = 'kb';
 $kb.addEventListener('touchstart', touchEvent);
 $kb.addEventListener('touchend', touchEvent);
 $kb.addEventListener('touchcancel', touchEvent);
 $kb.addEventListener('touchmove', touchEvent);
+$kb.addEventListener('mousedown', mouseEvent);
+$kb.addEventListener('mouseup', mouseEvent);
 for(var r = 0; r < rows.length; r++) {
   var row = rows[r];
   var $row = document.createElement('div');
@@ -207,9 +219,9 @@ for(var r = 0; r < rows.length; r++) {
     $key.className = 'key';
     $key.textContent = key;
     $key.dataset.action = key;
-    //$key.addEventListener('mousedown', keyDown);
-    //$key.addEventListener('mouseup', keyUp);
-    $key.addEventListener('animationstart', transitionEvent);
+    $key.dataset.row = r;
+    $key.dataset.col = c;
+   // $key.addEventListener('animationstart', transitionEvent);
     $row.appendChild($key);
   }
   $kb.appendChild($row);
