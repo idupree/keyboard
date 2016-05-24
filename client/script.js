@@ -37,6 +37,30 @@ var doLog = function(s) {
   $statusarea.textContent = logStr;
 };
 
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+var audio = new AudioContext();
+
+var boop = function(hz, gainFactor) {
+  doLog(hz+'Hz');
+  if(gainFactor == null) {
+    gainFactor = 1;
+  }
+  var now = audio.currentTime;
+  var gain = audio.createGain();
+  gain.connect(audio.destination);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(gainFactor, now + 0.010);
+  gain.gain.linearRampToValueAtTime(0, now + 0.400);
+  var osc = audio.createOscillator();
+  osc.frequency.value = hz;
+  osc.connect(gain);
+  osc.start();
+  osc.stop(now+0.5);
+  //not needed; nodes will eventually be GC'ed when done
+  //osc.disconnect(gain);
+  //gain.disconnect(audio.destination);
+};
+
 // For sending data over the wire and making it a bit harder for
 // eavesdroppers to guess what you sent, make the messages only
 // have a few possible size categories they can be.
