@@ -141,7 +141,7 @@ var toggleClass = function(elem, klass, be) {
 // ...not quite perfect. Not for multiple touches at once on ChromeOS.
 // Also preventDefault on long touches on ChromeOS is important here
 // (stop rightclick menu, which is both the goal and sad).
-var keyActiveChange = function(keyElem, keyName, isDown) {
+var keyActiveChange = function(keyName, isDown, keyElem, e) {
   var wasDown = !!activatedKeys[keyName];
   var isDown = !!isDown;
   if(isDown) {
@@ -168,7 +168,7 @@ var transitionEvent = function(e) {
   var down = keyElem.matches(':active');
   var key = keyElem.dataset.action;
   doLog('trans'+down);
-  keyActiveChange(keyElem, key, down);
+  keyActiveChange(key, down, keyElem, e);
 };
 //TODO events bind to body not a?
 var touchEvent = function(e) {
@@ -183,10 +183,10 @@ var touchEvent = function(e) {
     if(key) {
     doLog(e.type);
     if(e.type === 'touchstart') {
-      keyActiveChange(keyElem, key, true);
+      keyActiveChange(key, true, keyElem, touch);
     }
     if(e.type === 'touchend' || e.type === 'touchcancel') {
-      keyActiveChange(keyElem, key, false);
+      keyActiveChange(key, false, keyElem, touch);
     }
     }
   }
@@ -223,7 +223,7 @@ var keyEvent = function(e) {
   e.stopPropagation();
   console.log(e, e.key);
   if(e.key) {
-    keyActiveChange(null, e.key, e.type === 'keydown');
+    keyActiveChange(e.key, e.type === 'keydown');
   }
 };
 document.body.addEventListener('keydown', keyEvent);
