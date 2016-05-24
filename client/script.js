@@ -61,6 +61,11 @@ var boop = function(hz, gainFactor) {
   //gain.disconnect(audio.destination);
 };
 
+// test-sound
+setTimeout(function(){
+boop(840, 0.1);
+},300);
+
 // For sending data over the wire and making it a bit harder for
 // eavesdroppers to guess what you sent, make the messages only
 // have a few possible size categories they can be.
