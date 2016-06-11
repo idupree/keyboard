@@ -28,6 +28,7 @@ html, body {
   width: 100%;
   /*padding: 0.7256894049346879% 0;  padding height percents are of width*/
   flex: 1 1 auto;
+  display: flex;
   overflow: hidden;
   white-space: nowrap; /* so overflows by a pixel don't wrap */
 }
@@ -48,15 +49,17 @@ html, body {
 }
 .key {
   display: inline-block;
-  min-width: 7.421875%;
-  margin: 0 0.391%;
+  flex: 1 1 7.421875%;
+  xmin-width: 7.421875%;
   height: 100%;
   color: #222;
   background-color: #f9f9f9;
   text-align: center;
   vertical-align: middle;
   text-decoration: none;
-  border-radius: 5px;
+  xborder-radius: 10px;
+  xborder: 3px solid #fcc;
+  border: 1px solid #fcc;
   cursor: pointer;
 }
 .key:active, .key.activated {
@@ -82,7 +85,7 @@ html, body {
 @keyframes keyup { from { } to { } }
 @keyframes keydown { from { } to { } }
 .key[data-action="space"] {
-  width: 61.25%;
+  flex: 5 1 20%;
 }
 .key[data-action="q"] {
   width: 8.2%;
@@ -90,9 +93,10 @@ html, body {
 .key[data-action="a"] {
   width: 11.33%;
 }
-.key[data-action="Left"], .key[data-action="Down"], .key[data-action="Right"], .key[data-action="Up"] {
-  width: 5.8594%;
-  min-width: initial;
+.key[data-action="Left"], .key[data-action="Down"], .key[data-action="Right"], .key[data-action="Up"],
+.key[data-action="Shift"]:last-child {
+  flex: 0 0 5%;
+  min-width: 1.1em;
 }
 .key[data-action="1"], .key[data-action="2"], .key[data-action="3"], .key[data-action="4"],
 .key[data-action="5"], .key[data-action="6"], .key[data-action="7"], .key[data-action="8"],
@@ -104,6 +108,11 @@ html, body {
 .key[data-action=","], .key[data-action="."], .key[data-action="."] + .key[data-action="/"]
 {
   min-width: 5.7032%;
+}
+@media (max-width: 600px) {
+.key[data-action^="F"] {
+  font-size: 3vmin;
+}
 }
 .statusarea {
   /*
