@@ -2,10 +2,10 @@
 "use strict";
 var rows = [
   ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
-  ['Esc', '', '', 'reload', 'cut', 'copy', 'paste', 'undo', 'redo', '', '', 'r.click'],
+  ['Esc', 'Compose', 'reload', 'cut', 'copy', 'paste', 'undo', 'redo', 'r.click'],
   ['back', '?', '{', '}', '[', ']', '/', '\\', '|', '<', '>', 'm.click'],
   ['forward', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', 'click'],
-  ['`', '=', ':', '"', '_', '+', 'FwdDel', '', 'Home', 'End', 'PgUp', 'PgDn'],
+  ['U+', '`', '~', '=', ':', '"', '_', '+', 'FwdDel', 'Home', 'End', 'PgUp', 'PgDn'],
   ['Tab', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'Delete'],
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'Enter'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],

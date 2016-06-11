@@ -270,6 +270,8 @@ func keycodeFromName(name string) key.Code {
 		return key.CODE_PAGEUP
 	case "pgdn", "pagedown":
 		return key.CODE_PAGEDOWN
+	case "compose":
+		return key.CODE_COMPOSE
 	case "f1":
 		return key.CODE_F1
 	case "f2":
@@ -379,6 +381,12 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 	if ie.Action == "keydn" || ie.Action == "keyup" {
 		var k *gostwriter.K
 		var err error
+		var shift *gostwriter.K
+		shift, err = kb.Get(key.CODE_RIGHTSHIFT)
+		guard(err)
+		var ctrl *gostwriter.K
+		ctrl, err = kb.Get(key.CODE_RIGHTCTRL)
+		guard(err)
 		if code := keycodeFromName(ie.Key); code != key.CODE_RESERVED {
 			k, err = kb.Get(code)
 			guard(err)
@@ -392,9 +400,6 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 		} else if code := shiftedKeycodeFromName(ie.Key); code != key.CODE_RESERVED {
 			// TODO: something different if shift is already held down
 			k, err = kb.Get(code)
-			guard(err)
-			var shift *gostwriter.K
-			shift, err = kb.Get(key.CODE_RIGHTSHIFT)
 			guard(err)
 			if ie.Action == "keydn" {
 				log.Println("shifted key down")
@@ -410,9 +415,6 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 			// code duplication with shifted cases above
 			k, err = kb.Get(code)
 			guard(err)
-			var ctrl *gostwriter.K
-			ctrl, err = kb.Get(key.CODE_RIGHTCTRL)
-			guard(err)
 			if ie.Action == "keydn" {
 				log.Println("shifted key down")
 				press(ctrl)
@@ -420,6 +422,22 @@ func hilarioustest(kb *gostwriter.Keyboard, ie InputEvent) {
 			} else {
 				log.Println("shifted key up")
 				release(k)
+				release(ctrl)
+			}
+		} else if strings.ToLower(ie.Key) == "u+" {
+			code := key.CODE_U
+			// code duplication with shifted cases above
+			k, err = kb.Get(code)
+			guard(err)
+			if ie.Action == "keydn" {
+				log.Println("shifted key down")
+				press(ctrl)
+				press(shift)
+				press(k)
+			} else {
+				log.Println("shifted key up")
+				release(k)
+				release(shift)
 				release(ctrl)
 			}
 		} else {
