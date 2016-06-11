@@ -115,10 +115,7 @@ html, body {
 }
 }
 .statusarea {
-  /*
-  old actual: 20px + 18px unused space below aka 38px
-  new equivalent: height: 28px;
-  or flex ratio
-  */
-  flex: 0.733 0.733 auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  align-self: flex-end;
 }
