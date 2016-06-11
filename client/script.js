@@ -12,6 +12,40 @@ var rows = [
   ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Up', 'Shift'],
   ['Ctrl', 'Alt', 'space', 'Left', 'Down', 'Right']
   ];
+  // ~ deg emdash endash u+ searchforunicode
+
+// http://xahlee.info/comp/unicode_computing_symbols.html
+// http://www.fileformat.info/info/unicode/block/arrows/utf8test.htm
+var abbrs = {
+  'Compose': '⎄',
+  'Enter': '⏎', // ↵ ↩ ⏎
+  'Delete': '⌫',
+  'FwdDel': '⌦',
+  'back': '↩',
+  'forward': '↪',
+  'Up': '↑',
+  'Down': '↓',
+  'Left': '←',
+  'Right': '→',
+  'Shift': '⇧',
+  'reload': '⟳',
+  //'r.click': 'r⌖',
+  //'m.click': 'm⌖',
+  //'click': 'l⌖',
+  //'r.click': '⌖||',
+  'r.click': '||👆',
+  'm.click': '|👆|',
+  'click': '👆||',
+  'Home': '↖',
+  'End': '↘',
+  'PgUp': '⇞',
+  'PgDn': '⇟',
+  'undo': '⎌', // ↶
+  'redo': '↷',
+  'cut': '✂',
+  'copy': '⎘',
+  'paste': '⎀'
+};
 
 // keyname: true for keys that are currently pressed down
 var activatedKeys = Object.create(null);
@@ -282,7 +316,7 @@ for(var r = 0; r < rows.length; r++) {
     var key = row[c];
     var $key = document.createElement('button');
     $key.className = 'key';
-    $key.textContent = key;
+    $key.textContent = abbrs[key] || key;
     $key.dataset.action = key;
     $key.dataset.row = r;
     $key.dataset.col = c;
@@ -307,5 +341,8 @@ document.body.addEventListener('keydown', keyEvent);
 document.body.addEventListener('keyup', keyEvent);
 document.addEventListener('keydown', keyEvent);
 document.addEventListener('keyup', keyEvent);
+
+
+
 
 }();
